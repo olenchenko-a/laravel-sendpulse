@@ -1,0 +1,25 @@
+{
+    "name": "olenchenko-a/laravel-sendpulse-mail",
+    "description": "Laravel package for Sendpulse mail transport",
+    "keywords": [
+        "laravel",
+        "sendpulse",
+        "transport",
+        "mail"
+    ],
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "sendpulse/rest-api": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelSendpulseMail\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Artem Olenchenko"
+        }
+    ]
+}
