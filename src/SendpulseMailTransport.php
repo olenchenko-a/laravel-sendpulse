@@ -7,9 +7,11 @@ use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\MessageConverter;
 use Sendpulse\RestApi\ApiClient;
+use Sendpulse\RestApi\ApiClientException;
 use Sendpulse\RestApi\Storage\FileStorage;
 use LaravelSendpulseMail\Events\EmailSend;
 use Symfony\Component\Mime\Email;
+use Illuminate\Support\Facades\Log;
 
 class SendpulseMailTransport extends AbstractTransport
 {
@@ -48,9 +50,24 @@ class SendpulseMailTransport extends AbstractTransport
             })->all(),
         );
 
-        $response = $this->client->post('smtp/emails', [
-            'email' => $email,
-        ]);
+        try {
+            $response = $this->client->post('smtp/emails', [
+                'email' => $email,
+            ]);
+        } catch (ApiClientException $e) {
+            Log::error('Sending email trough sendpulse failed: ' . $e->getMessage(), [
+                'code' => $e->getCode(),
+                'response' => $e->getResponse(),
+                'headers' => $e->getHeaders(),
+                'curl_errors' => $e->getCurlErrors(),
+                'subject' => $email['subject'],
+                'from' => $email['from'],
+                'to' => $email['to'],
+            ]);
+
+            throw $e;
+        }
+
 
         if(is_null($response)) {
             throw new \Exception("Sending email trough sendpulse failed");
